@@ -1,0 +1,31 @@
+name: runtests
+
+on:
+  push:
+    paths: ['Project.toml', '**.jl', '!docs/**', '.github/workflows/runtests.yml']
+  pull_request:
+    paths: ['Project.toml', '**.jl', '!docs/**', '.github/workflows/runtests.yml']
+
+
+jobs:
+  test:
+    runs-on: ${{ matrix.os }}
+    continue-on-error: ${{ matrix.version == 'nightly' }}
+    strategy:
+      matrix:
+        version:
+          - '1.6'
+          - '1.9'
+        os:
+          - ubuntu-latest
+          - macOS-latest
+        arch:
+          - x64
+    steps:
+      - uses: actions/checkout@v4
+      - uses: julia-actions/setup-julia@v1.9
+        with:
+          version: ${{ matrix.version }}
+          arch: ${{ matrix.arch }}
+      - uses: julia-actions/julia-buildpkg@latest
+      - uses: julia-actions/julia-runtest@latest
