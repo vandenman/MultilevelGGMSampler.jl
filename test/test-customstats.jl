@@ -1,31 +1,31 @@
-using Test, GGMSampler
+using Test, MultilevelGGMSampler
 import OnlineStats
 
 @testset "custom stats" begin
 
     opts = (
         (
-            type = GGMSampler.OnCounter,
+            type = MultilevelGGMSampler.OnCounter,
             name = "OnCounter",
             ref  = x -> vec(sum(x, dims = 1)),
         ),
         (
-            type = GGMSampler.PairWiseOn,
+            type = MultilevelGGMSampler.PairWiseOn,
             name = "PairWiseOn",
-            ref  = x -> GGMSampler.tril_to_vec(x' * x, -1),
+            ref  = x -> MultilevelGGMSampler.tril_to_vec(x' * x, -1),
         ),
         (
-            type = GGMSampler.PairWiseOff,
+            type = MultilevelGGMSampler.PairWiseOff,
             name = "PairWiseOff",
-            ref  = x -> GGMSampler.tril_to_vec((1 .- x)' * (1 .- x), -1),
+            ref  = x -> MultilevelGGMSampler.tril_to_vec((1 .- x)' * (1 .- x), -1),
         ),
         (
-            type = GGMSampler.PairWiseOnOff,
+            type = MultilevelGGMSampler.PairWiseOnOff,
             name = "PairWiseOnOff",
             ref  = x -> begin
                 [
-                    GGMSampler.tril_to_vec(x' * x, -1) ;;
-                    GGMSampler.tril_to_vec((1 .- x)' * (1 .- x), -1)
+                    MultilevelGGMSampler.tril_to_vec(x' * x, -1) ;;
+                    MultilevelGGMSampler.tril_to_vec((1 .- x)' * (1 .- x), -1)
                 ]'
             end
         )

@@ -1,4 +1,4 @@
-using Test, GGMSampler
+using Test, MultilevelGGMSampler
 import LogExpFunctions
 
 @testset "LogExpFunctions" begin
@@ -26,8 +26,8 @@ import LogExpFunctions
         σ = abs(randn())
         k = 50
 
-        @test orig_logsumexp_sum(w, y)                         ≈ GGMSampler.fast_log_sum_exp_sum(w, y, t, 0.0)
-        @test orig_log_sum_exp_sum_shift(w, y, t, shift, σ, k) ≈ GGMSampler.fast_log_sum_exp_sum_shift(w, y, t, 0.0, shift, σ, k)
+        @test orig_logsumexp_sum(w, y)                         ≈MultilevelGGMSampler.fast_log_sum_exp_sum(w, y, t, 0.0)
+        @test orig_log_sum_exp_sum_shift(w, y, t, shift, σ, k) ≈MultilevelGGMSampler.fast_log_sum_exp_sum_shift(w, y, t, 0.0, shift, σ, k)
 
     end
 

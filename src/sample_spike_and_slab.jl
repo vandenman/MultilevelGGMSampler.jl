@@ -150,7 +150,7 @@ function sample_ss_precmat_one_participant!(rng, ik, individual_state, σ_prior_
 =#
 
 
-        GGMSampler.inv_submatrix!(K11inv, invK, ip)
+        inv_submatrix!(K11inv, invK, ip)
 
         # check = LinearAlgebra.UpperTriangular(K11inv) ≈ LinearAlgebra.UpperTriangular(inv(LinearAlgebra.Symmetric(Ks[r, r, ik])))
         # if !check
@@ -266,7 +266,7 @@ A = randn(4, 4)
 j = 3
 
 U = similar(A, 4, 2)
-GGMSampler._update_U!(U, Δ, j)
+._update_U!(U, Δ, j)
 
 A2 = copy(A)
 A2[:, j] += Δ
@@ -382,7 +382,7 @@ function sample_cholesky_diagonal(rng, new_v, A2, A3, D2, σ_mat, S, n, p, row_i
     β =  (1 / 2) * (S[row_idx, row_idx] + σ_mat[row_idx, row_idx] + 2 * LinearAlgebra.dot(A2, D2, A2))
     γ = -(1 / 2) * (4 * A2' * D2 * A3 * new_v + 2 * LinearAlgebra.dot(view(S, row_idx+1:p, row_idx), A2))
 
-    return rand(rng, GGMSampler.ModifiedHalfNormal(α, β, γ))
+    return rand(rng, ModifiedHalfNormal(α, β, γ))
 end
 
 function sample_cholesky_diagonal(rng, new_v, A2, A3, D2, σ_mat, S, n, p, row_idx, temp_mem)
@@ -397,7 +397,7 @@ function sample_cholesky_diagonal(rng, new_v, A2, A3, D2, σ_mat, S, n, p, row_i
     temp_val = LinearAlgebra.dot(A2', temp_mem)
     γ  = -(1 / 2) * (4 * temp_val              + 2 * LinearAlgebra.dot(view(S, row_idx+1:p, row_idx), A2))
 
-    return rand(rng, GGMSampler.ModifiedHalfNormal(α, β, γ))
+    return rand(rng, ModifiedHalfNormal(α, β, γ))
 end
 
 function sample_ss_precmat_one_participant!(rng, ik, individual_state, σ_mat, individual_structure_internal, cache, ::Type{CholeskySampling}, ::Type{CG_Inv})

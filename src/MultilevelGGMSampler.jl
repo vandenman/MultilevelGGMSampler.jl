@@ -1,4 +1,4 @@
-module GGMSampler
+module MultilevelGGMSampler
 
 #=
 
@@ -44,8 +44,6 @@ import Optim # could write a custom GradientDescent or Newton's method, might be
 # for approximations to esf
 import FastGaussQuadrature
 
-# Delete these after testing
-import Infiltrator#, JLD2
 
 include("BinarySpaceIterator.jl")
 include("LowerTriangleIterator.jl")

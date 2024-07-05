@@ -1,4 +1,4 @@
-using Test, GGMSampler
+using Test, MultilevelGGMSampler
 import LinearAlgebra
 
 @testset "Linear Algebra for 2x2 matrices" begin
@@ -14,7 +14,7 @@ import LinearAlgebra
             A = LinearAlgebra.Symmetric(randn(2, 2))
 
             eigval_true, eigvec_true = LinearAlgebra.eigen(A)
-            eigval_rep, eigvec_rep = GGMSampler.eigen_2x2(A)
+            eigval_rep, eigvec_rep =MultilevelGGMSampler.eigen_2x2(A)
             @test eigvec_rep * LinearAlgebra.Diagonal(eigval_rep) * eigvec_rep' ≈ A
             @test eigval_true ≈ eigval_rep
             @test eigvec_rep * eigvec_rep' ≈ LinearAlgebra.I
@@ -27,7 +27,7 @@ import LinearAlgebra
             A = LinearAlgebra.Symmetric([randn(); 0 ;; 0 ; randn()])
 
             eigval_true, eigvec_true = LinearAlgebra.eigen(A)
-            eigval_rep, eigvec_rep = GGMSampler.eigen_2x2(A)
+            eigval_rep, eigvec_rep =MultilevelGGMSampler.eigen_2x2(A)
             @test eigvec_rep * LinearAlgebra.Diagonal(eigval_rep) * eigvec_rep' ≈ A
             @test eigval_true ≈ eigval_rep
             @test eigvec_rep * eigvec_rep' ≈ LinearAlgebra.I

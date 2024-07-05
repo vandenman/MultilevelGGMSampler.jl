@@ -28,7 +28,7 @@ end
 function log_inclusion_prob_prior_G(d::AbstractGraphDistribution, G::AbstractArray{T, 3}, i::Integer, j::Integer, k::Integer) where T<:Integer
 
     Gvec = tril_to_vec(view(G, :, :, k))
-    e_id = GGMSampler.triangle_indices_to_linear_index(i, j, size(G, 1))
+    e_id = triangle_indices_to_linear_index(i, j, size(G, 1))
     return log_conditional_prob(one(k), e_id, d, Gvec)
 
 end

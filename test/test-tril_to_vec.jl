@@ -1,4 +1,4 @@
-using GGMSampler, LinearAlgebra, Test
+using MultilevelGGMSampler, LinearAlgebra, Test
 
 @testset "Triangular utility functions" begin
 

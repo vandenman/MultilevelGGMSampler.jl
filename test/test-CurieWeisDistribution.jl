@@ -1,4 +1,4 @@
-using Test, GGMSampler, LinearAlgebra, Distributions
+using Test, MultilevelGGMSampler, LinearAlgebra, Distributions
 import LogExpFunctions, StatsBase, Random
 
 @testset "Elementary Symmetric Functions" begin
@@ -47,7 +47,7 @@ end
                     # test that pdf sums to 1
                     @test sum(all_probs) ≈ 1.0
 
-                    lc = GGMSampler.log_const(d)
+                    lc = MultilevelGGMSampler.log_const(d)
                     result = LogExpFunctions.logsumexp(
                         logpdf_prop(d, g)
                         for g in BinarySpaceIterator(p)
@@ -115,8 +115,8 @@ end
                     if d isa CurieWeissDistribution
 
                         emperical_marginal_probs       = log.(vec(mean(samples, dims = 2)))
-                        true_log_marginal_probs        = GGMSampler.compute_log_marginal_probs(d)
-                        true_log_marginal_probs_approx = GGMSampler.compute_log_marginal_probs_approx(d)
+                        true_log_marginal_probs        = MultilevelGGMSampler.compute_log_marginal_probs(d)
+                        true_log_marginal_probs_approx = MultilevelGGMSampler.compute_log_marginal_probs_approx(d)
 
                         # tests observed probabilities against theoretical ones
                         @test isapprox(true_log_marginal_probs, emperical_marginal_probs; atol = 1e-1)
@@ -159,7 +159,7 @@ end
 
             @testset "Sampling" begin
 
-                esf_methods = (GGMSampler.ApproximateESF(), GGMSampler.ExactESF())
+                esf_methods = (MultilevelGGMSampler.ApproximateESF(), MultilevelGGMSampler.ExactESF())
 
                 n = 5000
                 for p in (50, 100, 150)
@@ -171,13 +171,13 @@ end
                     for μ_esf_method in esf_methods,
                         σ_esf_method in esf_methods
 
-                        # μ_esf_method, σ_esf_method = GGMSampler.ApproximateESF(), GGMSampler.ApproximateESF()
+                        # μ_esf_method, σ_esf_method = MultilevelGGMSampler.ApproximateESF(), MultilevelGGMSampler.ApproximateESF()
                         structure = CurieWeissStructure(;
-                            μ_esf_method = GGMSampler.ApproximateESF(),
-                            σ_esf_method = GGMSampler.ExactESF()
+                            μ_esf_method = MultilevelGGMSampler.ApproximateESF(),
+                            σ_esf_method = MultilevelGGMSampler.ExactESF()
                         )
 
-                        samples = GGMSampler.sample_curie_weiss(x, structure, n_iter = 5_000)
+                        samples = MultilevelGGMSampler.sample_curie_weiss(x, structure, n_iter = 5_000)
                         μ_est..., σ_est = vec(StatsBase.mean(samples, dims = 2))
 
                         # @show p, μ_esf_method, σ_esf_method, StatsBase.cor(μ, μ_est), σ_est, σ - σ_est
@@ -185,7 +185,7 @@ end
                         @test abs(σ - σ_est) <= .6
 
                         # test that the adaptive MCMC algorithm reaches the desired acceptation rate
-                        mh_state0 = GGMSampler.CurieWeissMHStateσ(; n_adapts = 1)
+                        mh_state0 = MultilevelGGMSampler.CurieWeissMHStateσ(; n_adapts = 1)
                         desired_acc = 1 - mh_state0.acc_target
                         σ_samples = @view(samples[end, :])
                         observed_acc = StatsBase.mean(σ_samples[2:end] .== σ_samples[1:end-1])

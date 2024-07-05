@@ -1,4 +1,4 @@
-using Test, GGMSampler, LogExpFunctions
+using Test, MultilevelGGMSampler, LogExpFunctions
 import ForwardDiff
 
 # TODO: ideally no atol is necessary!
@@ -12,7 +12,7 @@ import ForwardDiff
 
     function reference_fun!(log_esf, μ, σ, k)
 
-        GGMSampler.esf_sum_log!(log_esf, μ)
+        MultilevelGGMSampler.esf_sum_log!(log_esf, μ)
         LogExpFunctions.logsumexp(
             log_esf[i] + σ / k * (i - 1)^2
             for i in eachindex(log_esf)
@@ -23,13 +23,13 @@ import ForwardDiff
     function reference_fun_gibbs(μ, σ, j)
 
         k = length(μ)
-        # log_esf_all = GGMSampler.esf_sum_log(μ)
+        # log_esf_all = MultilevelGGMSampler.esf_sum_log(μ)
         # log_esf = similar(log_esf_all, length(log_esf_all) - 1)
 
-        # GGMSampler.esf_log_drop!(log_esf, log_esf_all, μ[j])
+        # MultilevelGGMSampler.esf_log_drop!(log_esf, log_esf_all, μ[j])
 
         # esf_log_drop! is inaccurate for large k
-        log_esf = GGMSampler.esf_sum_log(view(μ, 1:k .!= j))
+        log_esf = MultilevelGGMSampler.esf_sum_log(view(μ, 1:k .!= j))
 
         log_ts = [σ / k * i^2 for i in 0:k]
 
@@ -67,24 +67,24 @@ import ForwardDiff
                 obj = CurieWeissDenominatorApprox(get_weights(k))
 
                 reference_value = reference_fun(μ, σ)
-                GGMSampler.find_mode!(obj, μ, σ)
+                MultilevelGGMSampler.find_mode!(obj, μ, σ)
                 @test reference_value ≈ compute_log_den!(obj, μ, σ)
 
                 j = rand(1:k)
                 μ_new = μ_old = μ[j]
 
                 # TODO: these steps seem weirdly unstable... or are they implemented incorrectly?
-                GGMSampler.update!(obj, μ_new, μ_old, σ, k)
+                MultilevelGGMSampler.update!(obj, μ_new, μ_old, σ, k)
                 @test reference_value ≈ get_value(obj)
 
 
-                GGMSampler.downdate!(obj, μ_new, σ, k)
+                MultilevelGGMSampler.downdate!(obj, μ_new, σ, k)
                 reference_value2 = reference_fun(view(μ, 1:k .!= j), σ, k)
                 # @test isnan(reference_value2) || isapprox(reference_value2, get_value(obj))#, atol=atol)
 
                 @test isapprox(reference_value2, get_value(obj))#, atol = atol)
 
-                GGMSampler.update!(obj, μ_new, σ, k)
+                MultilevelGGMSampler.update!(obj, μ_new, σ, k)
                 @test reference_value ≈ get_value(obj)
 
                 # without big, the original function tends to produce incorrect answers...
@@ -92,9 +92,9 @@ import ForwardDiff
 
                 # start fresh
                 obj = CurieWeissDenominatorApprox(get_weights(k))
-                GGMSampler.find_mode!(obj, μ, σ)
-                GGMSampler.compute_ys!(obj, μ, σ)
-                GGMSampler.downdate!(obj, μ[j], σ, k)
+                MultilevelGGMSampler.find_mode!(obj, μ, σ)
+                MultilevelGGMSampler.compute_ys!(obj, μ, σ)
+                MultilevelGGMSampler.downdate!(obj, μ[j], σ, k)
 
                 @test reference_log_c1 ≈ get_value(obj)                  #atol = atol
                 @test reference_log_c2 ≈ get_shifted_value(obj, σ, k, 1) #atol = atol
@@ -108,7 +108,7 @@ end
 
 @testset "Derivative integrand" begin
 
-    f_integrand2(t, μ, σ) = GGMSampler.f_integrand(t, μ, σ)
+    f_integrand2(t, μ, σ) = MultilevelGGMSampler.f_integrand(t, μ, σ)
     function f_integrand2(t::ForwardDiff.Dual, μ, σ)
 
         log_z = 2 * t * sqrt(σ / length(μ))
@@ -125,7 +125,7 @@ end
     σ = 2.5
     g_ref  = [ForwardDiff.gradient(t -> -f_integrand2(first(t), μ, σ) + abs2(first(t)), [v])[1] for v in testvalues]
     d_ref  = [ForwardDiff.derivative(t -> -f_integrand2(t, μ, σ) + abs2(t), v) for v in testvalues]
-    d_self = GGMSampler.∂f∂t.(testvalues, Ref(μ), σ)
+    d_self = MultilevelGGMSampler.∂f∂t.(testvalues, Ref(μ), σ)
     @test g_ref ≈ d_ref ≈ d_self
 
 end

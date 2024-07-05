@@ -1,4 +1,4 @@
-using Test, GGMSampler
+using Test, MultilevelGGMSampler
 
 @testset "LowerTriangle and UpperTriangle" begin
     for (name, M) in (("LowerTriangle", LowerTriangle), ("UpperTriangle", UpperTriangle))
@@ -41,7 +41,7 @@ using Test, GGMSampler
                     @test idx_fast == idx_manual
 
                     if !include_diag && M === LowerTriangle
-                        @test idx_fast == GGMSampler.linear_index_to_lower_triangle_indices.(1:e, p)
+                        @test idx_fast ==MultilevelGGMSampler.linear_index_to_lower_triangle_indices.(1:e, p)
                     end
 
                 end
@@ -55,8 +55,8 @@ end
     for p in 2:10
         kmax = p * (p - 1) ÷ 2
         for k in 1:kmax
-            i, j  = GGMSampler.linear_index_to_lower_triangle_indices(k, p)
-            k_rep = GGMSampler.triangle_indices_to_linear_index(i, j, p)
+            i, j  =MultilevelGGMSampler.linear_index_to_lower_triangle_indices(k, p)
+            k_rep =MultilevelGGMSampler.triangle_indices_to_linear_index(i, j, p)
             @test k == k_rep
         end
     end

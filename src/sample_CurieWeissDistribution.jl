@@ -66,7 +66,7 @@ function sample_cw_μ!(rng::Random.AbstractRNG, μ, σ, sum_scores_x, k, state::
         # log_esf   = esf_sum_log(view(μ, r))
         esf_log_drop!(log_esf, log_esf_all, μ[i])
 
-        # log_esf_0 = GGMSampler.esf_sum_log(μ) # only for testing
+        # log_esf_0 = .esf_sum_log(μ) # only for testing
 
         log_c1 = LogExpFunctions.logsumexp(log_esf[k] + log_ts[k]     for k in 1:p)
         log_c2 = LogExpFunctions.logsumexp(log_esf[k] + log_ts[k + 1] for k in 1:p)
@@ -75,8 +75,8 @@ function sample_cw_μ!(rng::Random.AbstractRNG, μ, σ, sum_scores_x, k, state::
 
         # same check as the above on a non-log scale
 
-        # esf = GGMSampler.esf_sum(exp.(μ[1:end .!= i]))
-        # esf0 = GGMSampler.esf_sum(exp.(μ))
+        # esf = .esf_sum(exp.(μ[1:end .!= i]))
+        # esf0 = .esf_sum(exp.(μ))
         # ts0 = [exp(σ / p * (i - 1)^2) for i in 1:p+1]
 
         # c1 = LinearAlgebra.dot(esf, ts0[1:end - 1])

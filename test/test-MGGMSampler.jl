@@ -1,4 +1,4 @@
-using Test, GGMSampler
+using Test, MultilevelGGMSampler
 import Random, StatsBase
 
 # TODO: some of the functions used in this file should be in the package itself, or should be exported!
@@ -10,7 +10,7 @@ import Random, StatsBase
 @testset "sample_MGGM" begin
 
     n, p, k = 1000, 10, 20
-    πGW = GGMSampler.GWishart(p, 3.0)
+    πGW = MultilevelGGMSampler.GWishart(p, 3.0)
     groupstructure = CurieWeissStructure(; σ = 0.15)
     data, parameters = simulate_hierarchical_ggm(n, p, k, πGW, groupstructure)
     save_individual_precmats = false#sizeof(Float64) * p * p * k <= save_limit
@@ -43,7 +43,7 @@ import Random, StatsBase
 
                 @test StatsBase.cor(true_K_vec, est_K_vec) >= .95
 
-                true_G_vec  = vec(GGMSampler.graph_array_to_mat(parameters.G))
+                true_G_vec  = vec(MultilevelGGMSampler.graph_array_to_mat(parameters.G))
                 means_G_vec = vec(results.G)
                 _, _, auc = compute_roc_auc(true_G_vec, means_G_vec)
 

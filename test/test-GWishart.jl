@@ -22,7 +22,7 @@ if (!require("BDgraph")) {
 }
 """
 
-using GGMSampler, Test, StatsBase
+using MultilevelGGMSampler, Test, StatsBase
 import Graphs, Distributions, PDMats, LinearAlgebra
 
 function linear_to_cartesian(k)
@@ -58,7 +58,7 @@ end
 
         neighbors = Graphs.neighbors.(Ref(G), Graphs.vertices(G))
 
-        GGMSampler.chain!(W, Σ, neighbors)
+        MultilevelGGMSampler.chain!(W, Σ, neighbors)
 
         iW = inv(W)
         adj = Matrix(Graphs.adjacency_matrix(G))

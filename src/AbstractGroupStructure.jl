@@ -49,7 +49,7 @@ Base.@kwdef struct CurieWeissStructure{
     σ::W  = nothing
     # ESF method
     μ_esf_method::Y1 = ApproximateESF()
-    σ_esf_method::Y2 = ExactESF()
+    σ_esf_method::Y2 = ApproximateESF()
 end
 
 struct CurieWeissStructureInternal{

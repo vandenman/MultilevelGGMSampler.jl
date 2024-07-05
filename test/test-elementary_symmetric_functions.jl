@@ -1,4 +1,4 @@
-using Test, GGMSampler, LogExpFunctions
+using Test, MultilevelGGMSampler, LogExpFunctions
 import Combinatorics
 
 @testset "esf_sum" begin
@@ -18,7 +18,7 @@ end
 
     for n in 1:10
         x = randn(n)
-        @test reference_fun(x) ≈ GGMSampler.esf_sum_log(x)
+        @test reference_fun(x) ≈ MultilevelGGMSampler.esf_sum_log(x)
     end
 end
 
@@ -27,7 +27,7 @@ end
         x = randn(n)
 
         temp = esf_sum(view(x, 1:n-1))
-        @test esf_sum(x) ≈ GGMSampler.esf_add(temp, x[n])
+        @test esf_sum(x) ≈ MultilevelGGMSampler.esf_add(temp, x[n])
     end
 end
 @testset "esf_drop" begin
@@ -35,7 +35,7 @@ end
         x = randn(n)
 
         temp = esf_sum(x)
-        @test esf_sum(view(x, 1:n-1)) ≈ GGMSampler.esf_drop(temp, x[n])
+        @test esf_sum(view(x, 1:n-1)) ≈ MultilevelGGMSampler.esf_drop(temp, x[n])
     end
 end
 
@@ -43,8 +43,8 @@ end
     for n in 2:11
         x = randn(n)
 
-        temp = GGMSampler.esf_sum_log(view(x, 1:n-1))
-        @test GGMSampler.esf_sum_log(x) ≈ GGMSampler.esf_log_add(temp, x[n])
+        temp = MultilevelGGMSampler.esf_sum_log(view(x, 1:n-1))
+        @test MultilevelGGMSampler.esf_sum_log(x) ≈ MultilevelGGMSampler.esf_log_add(temp, x[n])
     end
 end
 
@@ -52,8 +52,8 @@ end
     for n in 1:10
         x = randn(n)
 
-        temp = GGMSampler.esf_sum_log(x)
-        @test GGMSampler.esf_sum_log(view(x, 1:n-1)) ≈ GGMSampler.esf_log_drop(temp, x[n])
+        temp = MultilevelGGMSampler.esf_sum_log(x)
+        @test MultilevelGGMSampler.esf_sum_log(view(x, 1:n-1)) ≈ MultilevelGGMSampler.esf_log_drop(temp, x[n])
     end
 end
 
@@ -72,7 +72,7 @@ end
 #         ref_log_esf_t_k_2 = [log(ref_esf[k]) + ((k - 1)^2) * log(t) for k in eachindex(ref_esf)]
 #         ref_esf_t_k_2     = [ref_esf[k] * t^((k - 1)^2) for k in eachindex(ref_esf)]
 
-#         obj = GGMSampler.ESFHelper(x)
+#         obj = MultilevelGGMSampler.ESFHelper(x)
 #         esf_t_k_2 = esf_sum_t2(obj, x, t)
 
 #         if n <= 50
@@ -109,7 +109,7 @@ end
 
 #         #         @test isapprox(LogExpFunctions.logsumexp(ref_dropped), LogExpFunctions.logsumexp(value_dropped), atol = 1e-4)
 
-#         #         value_added = GGMSampler.log_esf_sum_t2_add(obj, log_x[i], log_t)
+#         #         value_added = MultilevelGGMSampler.log_esf_sum_t2_add(obj, log_x[i], log_t)
 
 #         #         if n <= 50
 #         #             @test ref_log_esf_t_k_2 ≈ value_added

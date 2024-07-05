@@ -1,4 +1,4 @@
-using Test, GGMSampler
+using Test, MultilevelGGMSampler
 import Distributions
 
 @testset "Simplifications ratio normal" begin
@@ -9,7 +9,7 @@ import Distributions
     for p in ps
 
         σ_spike, σ_slab = abs.(randn(p, p)), abs.(randn(p, p))
-        σ_helper2, σ_log_ratio = GGMSampler.compute_σ_helper2_and_σ_log_ratio(σ_spike, σ_slab)
+        σ_helper2, σ_log_ratio = MultilevelGGMSampler.compute_σ_helper2_and_σ_log_ratio(σ_spike, σ_slab)
 
         for _ in 1:n_reps
             x_test = randn()

@@ -165,7 +165,7 @@ function compute_log_den_gradient!(result::AbstractVector, x::AbstractMatrix, μ
     r = trues(length(μ))
     for i in eachindex(μ)
         r[i] = false
-        GGMSampler.esf_sum!(esf_values_no_i, view(exp_μ, r))
+        esf_sum!(esf_values_no_i, view(exp_μ, r))
         lognum_μ = LogExpFunctions.logsumexp(
             log(esf_values_no_i[i]) + σ * i^2 / length(μ)
             for i in eachindex(esf_values_no_i)
@@ -275,7 +275,7 @@ function compute_log_marginal_probs(d::CurieWeissDistribution)
     μ, σ = Distributions.params(d)
     p = length(μ)
 
-    log_esf_values = GGMSampler.esf_sum_log(μ)
+    log_esf_values = esf_sum_log(μ)
 
     log_den = LogExpFunctions.logsumexp(log_esf_values[k + 1] + σ / p * k^2 for k in 0:length(μ))
 
