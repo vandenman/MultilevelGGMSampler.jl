@@ -156,9 +156,9 @@ end
 function initialize_individual_state(
     s::AbstractIndividualStructureInternal,
     p::Integer, k::Integer,
-    init_K::Union{Nothing, AbstractArray{T, 3}, AbstractMatrix{T}},
-    init_G::Union{Nothing, AbstractArray{U, 3}, AbstractMatrix{U}}
-)   where {T<:Real, U<:Integer}
+    init_K::Union{Nothing, AbstractArray{<:Real, 3}, AbstractMatrix{<:Real}},
+    init_G::Union{Nothing, AbstractArray{<:Integer, 3}, AbstractMatrix{<:Integer}}
+)
 
     D = eltype(s)
     if isnothing(init_K)

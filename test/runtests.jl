@@ -10,6 +10,10 @@ const on_ci = haskey(ENV, "CI") ? ENV["CI"] == "true" : false
 
 @testset "MultilevelGGMSampler" begin
 
+	@testset "Aqua.jl" begin
+		include("Aqua.jl")
+	end
+
 	for t in tests
 		@testset "Test $t" begin
 			Random.seed!(42)

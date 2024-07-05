@@ -6,8 +6,8 @@ function sample_GGM(
 
     individualStructure::AbstractIndividualStructure = GWishartStructure(),
 
-    rng::Random.AbstractRNG = Random.default_rng(), # <- should be a kwarg?
     ;
+    rng::Random.AbstractRNG = Random.default_rng(),
     init_K = nothing,
     init_G = nothing,
     # MCMC parameters

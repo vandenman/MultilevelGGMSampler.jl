@@ -38,7 +38,7 @@ function simulate_hierarchical_ggm(
     # Possible feature: allow for passing specific parameters! perhaps use initial values?
     posterior::GWishart,
     group_structure::AbstractGroupStructure,
-    raw_observations = true
+    raw_observations::Bool = true
 ) where {T<:Integer}
 
 
