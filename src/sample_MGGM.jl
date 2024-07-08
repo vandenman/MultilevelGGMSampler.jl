@@ -204,12 +204,12 @@ function initialize_individual_state(
     end
 
     if isnothing(init_G)
-        Gs = zeros(Bool, p, p, k)
+        Gs = zeros(Int, p, p, k)
     elseif init_G isa AbstractMatrix
         @assert size(init_G) == (p, p)
-        Gs = Bool.repeat(init_G, 1, 1, k) # NOTE: the different slices are not aliased
+        Gs = Int.(repeat(init_G, 1, 1, k))
     elseif init_G isa AbstractArray{T, 3} where T
-        Gs = copy(init_G)
+        Gs = Int.(init_G)
     end
 
     G_objs = Vector{Graphs.SimpleGraph{Int}}(undef, k)
@@ -220,7 +220,7 @@ function initialize_individual_state(
     end
 
 
-    return (Ks = Ks, Gs = Int.(Gs), Ls = Ls, G_objs = G_objs)
+    return (Ks = Ks, Gs = Gs, Ls = Ls, G_objs = G_objs)
 
 end
 
