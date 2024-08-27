@@ -4,6 +4,10 @@
     perhaps contact Benjamin to see if we can update this?
 
 =#
+"""
+Compute the elementary symmetric functions of order k = 1, ..., n in place in the preallocated vector `S`.
+See also [`esf_sum`](@ref), [`esf_sum_log`](@ref), [`esf_sum_log!`](@ref)
+"""
 function esf_sum!(S::AbstractVector{T}, x::AbstractVector{T}) where {T<:Real}
     Base.require_one_based_indexing(S)
     Base.require_one_based_indexing(x)
@@ -34,12 +38,19 @@ julia> esf_sum([3.5118, .6219, .2905, .8450, 1.8648])
   7.05289
  0.999736
 ```
+
+See also [`esf_sum!`](@ref), [`esf_sum_log`](@ref), [`esf_sum_log!`](@ref)
 """
 function esf_sum(x::AbstractVector)
     S = similar(x, length(x) + 1)
     return esf_sum!(S, x)
 end
 
+"""
+Compute the logarithm of the elementary symmetric functions of order k = 1, ..., n in place in the preallocated vector `S`.
+The input is assumed to be on a log scale.
+See also [`esf_sum`](@ref), [`esf_sum!`](@ref), [`esf_sum_log`](@ref)
+"""
 function esf_sum_log!(S::AbstractVector{T}, log_x::AbstractVector{T}) where T <: Real
     Base.require_one_based_indexing(S)
     Base.require_one_based_indexing(log_x)
@@ -74,8 +85,13 @@ function logaddexp2(x::Real, y::Real)
     return max + log(1 + exp(diff))
 end
 
-function esf_sum_log(log_x::AbstractVector)
-    S = similar(log_x, length(log_x) + 1)
+"""
+Compute the logarithm of the elementary symmetric functions of order k = 1, ..., n.
+The input is assumed to be on the log scale.
+See also [`esf_sum`](@ref), [`esf_sum!`](@ref), [`esf_sum_log!`](@ref)
+"""
+function esf_sum_log(log_x::AbstractVector{T}) where T<:Number
+    S = similar(log_x, float(T), length(log_x) + 1)
     esf_sum_log!(S, log_x)
     return S
 end

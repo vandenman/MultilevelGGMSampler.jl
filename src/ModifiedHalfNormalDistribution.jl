@@ -1,3 +1,30 @@
+"""
+The modified half-normal distribution.
+
+
+```math
+f(x; \\alpha, \\beta, \\gamma) = 2\\beta^{\\alpha/2}x^{\\alpha-1} \\exp(-\\beta x^2 + \\gamma x) \\frac{1}{B(\\alpha, \\beta)}
+, \\quad x > 0
+```
+
+The algorithm to sample from this distribution is based on
+
+Gao, F., & Wang, H. B. (2022). Generating Modified-Half-Normal Random Variates by a Relaxed Transformed Density Rejection Method.
+
+The algorithm here is a translation of the R code, note that the sampling assumed Float64 precision.
+
+```julia
+ModifiedHalfNormal(α, β, γ)
+```
+
+Special cases:
+    - `ModifiedHalfNormal(α, β, 0)` equals `√(Gamma(α / 2, 1 / β)`
+    - `ModifiedHalfNormal(1, β, γ)` equals `truncated(Normal(γ / 2β, 1 / sqrt(2β)), 0, Inf)`
+
+External links
+
+* [Modified half-normal distribution on Wikipedia](https://en.wikipedia.org/wiki/Modified_half-normal_distribution)
+"""
 struct ModifiedHalfNormal{T} <: Distributions.ContinuousUnivariateDistribution
     α::T
     β::T
@@ -26,31 +53,22 @@ function Random.rand(rng::Random.AbstractRNG, d::ModifiedHalfNormal)
     iszero(γ) && return sqrt(rand(rng, Distributions.Gamma(α / 2, inv(β))))
     isone(α)  && return rand(rng, Distributions.truncated(Distributions.Normal(γ / 2β, inv(sqrt(2β))), 0, Inf))
 
-    # 0 < α < 1
-    # return _rand_Gao_Wang(rng, α, β, -γ)
-
-
-    # condition_sun_alg_1(α, β, γ) && return sun_alg_1(rng, α, β, γ)
-
-    try
+    # try
         return _rand_Gao_Wang(rng, α, β, -γ)
-    catch e
-        @show α, β, γ
-        throw(e)
-    end
-
-    # return _rand_Gao_Wang(rng, α, β, -γ)
-    # return _rand_mhn_α_ge_0_β_ge_0_γ_le_0(rng, d)
+    # catch e
+    #     @show α, β, γ
+    #     throw(e)
+    # end
 
 end
-
-
-# Random.sampler(d::ModifiedHalfNormalDistribution)
 
 function Distributions.logpdf(d::ModifiedHalfNormal, x::Real)
     logpdf_prop(d, x) - log_const(d)
 end
 
+"""
+Proportional to `logpdf(d, x)`, dropping any normalizing constants.
+"""
 function logpdf_prop(d::ModifiedHalfNormal, x::Real)
 
     α, β, γ = Distributions.params(d)
@@ -67,6 +85,9 @@ function logpdf_prop(d::ModifiedHalfNormal, x::Real)
 
 end
 
+"""
+The normalizing constant of `d`.
+"""
 function log_const(d::ModifiedHalfNormal)
 
     α, β, γ = Distributions.params(d)
@@ -83,47 +104,11 @@ function log_const(d::ModifiedHalfNormal)
 
 end
 
-# function exp_const(d::ModifiedHalfNormal)
-
-#     α, β, γ = Distributions.params(d)
-
-
-#     temp1 = (one(α) + α) / 2
-#     temp2 = α / 2
-#     term_1 =       γ * SpecialFunctions.gamma(temp1) * HypergeometricFunctions._₁F₁(temp1, 3 / 2, abs2(γ) / (4β))
-#     term_2 = sqrt(β) * SpecialFunctions.gamma(temp2) * HypergeometricFunctions._₁F₁(temp2, 1 / 2, abs2(γ) / (4β))
-#     return (1 / 2) * β ^ (-temp1) * (term_1 + term_2)
-
-# end
-
-
-# these two are outdated!
-@inline function _gap_setup(tl, logf_m)
-    expl = exp(tl)
-    logf_tl  = λ * tl - expl * (    expl + β)
-    dlogf_tl = λ      - expl * (2 * expl + β)
-    gap = logf_m - logf_tl
-    return gap, tl, expl, logf_tl, dlogf_tl
-end
-@inline function _gap_helper(gap, tl, dlogf_tl, logf_m, λ, β, gap_lb = 0.46, gap_ub = 2.49, gap_diff = one(gap))
-    while gap < gap_lb || gap > gap_ub
-        tl = tl + (gap - gap_diff) / dlogf_tl
-        expl = exp(tl)
-        logf_tl  = λ * tl - expl * (expl + β)
-        dlogf_tl = λ - expl * (2 * expl + β)
-        gap = logf_m - logf_tl
-    end
-    return gap, tl, expl, logf_tl, dlogf_tl
-end
-
 @inline function _gap(start, logf_m, λ_m1, β)
     tr = start
     logf_tr = λ_m1 * log(tr) - (tr + β) * tr
     dlogf_tr = λ_m1 / tr - 2*tr - β
     gap = logf_m - logf_tr
-
-    # iszero(gap - 1) && throw(error("failure in _gap: gap - 1 == 0"))
-    # iszero(gap - 1) && @warn "failure in _gap: gap - 1 == 0"
 
     count = 0
     safety = 100_000
@@ -134,7 +119,7 @@ end
         gap = logf_m - logf_tr
 
         count += 1
-        count > safety && throw(error("failure in _gap: 100_000 iterations passed"))
+        count > safety && _error_rand_Gao_Wang()
     end
     return gap, tr, logf_tr, dlogf_tr
 end
@@ -144,9 +129,6 @@ end
     logf_tl  = λ * tl - expl * (    expl + β)
     dlogf_tl = λ      - expl * (2 * expl + β)
     gap = logf_m - logf_tl
-
-    # iszero(gap - gap_diff) && throw(error("failure in _gap2: gap - gap_diff == 0"))
-    # iszero(gap - gap_diff) && @warn "failure in _gap2: gap - gap_diff == 0"
 
     count = 0
     safety = 100_000
@@ -158,7 +140,7 @@ end
         gap = logf_m - logf_tl
 
         count += 1
-        count > safety && throw(error("failure in _gap2: 100_000 iterations passed"))
+        count > safety && _error_rand_Gao_Wang()
     end
     return gap, tl, expl, logf_tl, dlogf_tl
 end
@@ -169,22 +151,9 @@ end
 
 function _rand_Gao_Wang(rng::Random.AbstractRNG, λ, α, β)
 
-    # λ, α, β = Distributions.params(d)
-
     root_α = sqrt(α)
     β = β / root_α
     β² = abs2(β)
-
-    # if β < zero(β)
-    #     expm = (sqrt(β² + 8λ) - β) / 4
-    # else
-    #     expm = 2λ / (sqrt(β² + 8λ) + β)
-    # end
-
-    # mmm = log(expm)
-    # logf_m   = λ * mmm - expm * (    expm + β)
-    # dlogf_m  = λ       - expm * (2 * expm + β)
-    # ddlogf_m = -expm * (4 * expm + β)
 
     if λ >= one(λ)
 

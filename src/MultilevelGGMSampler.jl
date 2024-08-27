@@ -95,9 +95,12 @@ export
 
     # Distributions -- methods
     logpdf_prop,
-    log_inclusion_prob,
-    log_conditional_prob,
-    log_inclusion_prob_prior_G, # <- TODO: do we need this one?
+    log_const,
+
+    # TODO: these were exported but why?
+    # log_inclusion_prob,
+    # log_conditional_prob,
+    # log_inclusion_prob_prior_G, # <- TODO: do we need this one?
 
 
     # elementary symmetric functions

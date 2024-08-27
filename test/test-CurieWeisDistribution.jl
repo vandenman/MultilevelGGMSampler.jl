@@ -92,7 +92,7 @@ end
                             @assert isone(states[i][l]) && iszero(states[ic][l])
 
                             manual_log_inclusion_prob = log(all_probs[i] / (all_probs[i] + all_probs[ic]))
-                            fast_log_inclusion_prob = log_inclusion_prob(l, d, states[i])
+                            fast_log_inclusion_prob = MultilevelGGMSampler.log_inclusion_prob(l, d, states[i])
 
                             @test isapprox(manual_log_inclusion_prob, fast_log_inclusion_prob; atol = 1e-6)
 

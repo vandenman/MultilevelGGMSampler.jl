@@ -67,12 +67,18 @@ function loglikelihood_suffstats_σ(d::CurieWeissDistribution, sum_sq, k)
     return log_num - log_den * k
 end
 
+"""
+Proportional to `logpdf(d, x)`, dropping any normalizing constants.
+"""
 function logpdf_prop(d::CurieWeissDistribution, x::AbstractVector)
     μ, σ = Distributions.params(d)
     # return LinearAlgebra.dot(x, μ) + σ * sum(x)^2
     return LinearAlgebra.dot(x, μ) + σ * abs2(sum(x)) / length(μ)
 end
 
+"""
+The normalizing constant of `d`.
+"""
 function log_const(d::CurieWeissDistribution)
 
     μ, σ = Distributions.params(d)
