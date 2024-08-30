@@ -10,6 +10,11 @@ A Julia package for estimating Multilevel Gaussian Graphical Models using Bayesi
 
 ## Installation
 
+This package is not (yet) registered. To install it, start julia and press `]` to enter the package manager. Then run
+```julia-repl
+pkg> add https://github.com/vandenman/MultilevelGGMSampler.jl
+```
+
 ## Multilevel Models
 
 ## Supported Individual Level Models
@@ -17,8 +22,32 @@ A Julia package for estimating Multilevel Gaussian Graphical Models using Bayesi
 - G-Wishart
 
 ## Supported Group Level Models
+- None (assumes independence)
 - Curie-Weiss distribution
-- Beta-binomial
-- Bernouilli
 
 ## Example
+
+```julia
+using MultilevelGGMSampler
+
+# time points, nodes, participants
+t, p, k = 1000, 10, 20
+
+# used to sample individual level precision matrices
+πGW = GWishart(p, 3.0)
+
+# define the group-level model
+group_structure = CurieWeissStructure()
+
+# simulate data
+data, parameters = simulate_hierarchical_ggm(n, p, k, πGW, groupstructure)
+
+# specify the individual-level model
+SpikeAndSlabStructure(;threaded = true)
+
+# run the Gibbs sampler
+results = sample_MGGM(data, individual_level, group_level; n_iter = 2000, n_warmup = 1000)
+
+# extract the posterior means
+results = extract_posterior_means(res)
+```
